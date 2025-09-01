@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/todos")
 public class TodoController {
-  private final TodoService todoService = new TodoService();
+  private final TodoService todoService;
 
   @GetMapping
   public List<Todo> getAllTodo() {
