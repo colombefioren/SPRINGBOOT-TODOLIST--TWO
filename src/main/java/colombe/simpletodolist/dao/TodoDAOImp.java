@@ -38,7 +38,30 @@ public class TodoDAOImp implements TodoDAO {
     } catch (SQLException e) {
       throw new RuntimeException("Error fetching the todo with id " + id);
     }
-      return null;
+    return null;
+  }
+
+  public void createTodo(Todo todo) {
+    String sql = "INSERT INTO TODO (title, description) VALUES (?, ?)";
+    try (Connection conn = DBConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, todo.getTitle());
+      stmt.setString(2, todo.getDescription());
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Error while adding a new todo");
+    }
+  }
+
+  public void deleteTodo(int id) {
+    String sql = "DELETE FROM TODO WHERE ID = ?";
+    try (Connection conn = DBConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+    stmt.setInt(1, id);
+    stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Error deleting the todo");
+    }
   }
 
   public Todo mapRow(ResultSet rs) throws SQLException {
