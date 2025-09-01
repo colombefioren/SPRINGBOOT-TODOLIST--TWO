@@ -57,8 +57,8 @@ public class TodoDAOImp implements TodoDAO {
     String sql = "DELETE FROM TODO WHERE ID = ?";
     try (Connection conn = DBConnection.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
-    stmt.setInt(1, id);
-    stmt.executeUpdate();
+      stmt.setInt(1, id);
+      stmt.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException("Error deleting the todo");
     }
