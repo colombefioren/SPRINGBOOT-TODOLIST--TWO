@@ -93,9 +93,13 @@ public class TodoDAOImp implements TodoDAO {
         rs.getInt("id"),
         rs.getString("title"),
         rs.getString("description"),
-        rs.getTimestamp("start_datetime").toInstant(),
-        rs.getTimestamp("end_datetime").toInstant(),
+        toInstant(rs.getTimestamp("start_datetime")),
+        toInstant(rs.getTimestamp("end_datetime")),
         rs.getBoolean("done"));
+  }
+
+  private Instant toInstant(Timestamp ts) {
+    return ts == null ? null : ts.toInstant();
   }
 
   private Timestamp toTimestamp(Instant instant) {
