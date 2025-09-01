@@ -40,30 +40,40 @@ public class TodoDAOImp implements TodoDAO {
   }
 
   public void createTodo(Todo todo) {
-    String sql =
-        "INSERT INTO TODO (title, description,start_datetime, end_datetime, done) VALUES (?, ?,?,?,?)";
+    String sql;
+    boolean hasStart = todo.getStartDatetime() != null;
+    boolean hasEnd = todo.getEndDatetime() != null;
+
+    if (hasStart && hasEnd) {
+      sql =
+          "INSERT INTO todo (title, description, start_datetime, end_datetime, done) VALUES (?, ?, ?, ?, ?)";
+    } else if (hasStart) {
+      sql = "INSERT INTO todo (title, description, start_datetime, done) VALUES (?, ?, ?, ?)";
+    } else if (hasEnd) {
+      sql = "INSERT INTO todo (title, description, end_datetime, done) VALUES (?, ?, ?, ?)";
+    } else {
+      sql = "INSERT INTO todo (title, description, done) VALUES (?, ?, ?)";
+    }
+
     try (Connection conn = DBConnection.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
-      stmt.setString(1, todo.getTitle());
-      stmt.setString(2, todo.getDescription());
 
-      if (todo.getStartDatetime() != null) {
-        stmt.setTimestamp(3, toTimestamp(todo.getStartDatetime()));
-      } else {
-        stmt.setTimestamp(3, null);
+      int index = 1;
+      stmt.setString(index++, todo.getTitle());
+      stmt.setString(index++, todo.getDescription());
+
+      if (hasStart) {
+        stmt.setTimestamp(index++, toTimestamp(todo.getStartDatetime()));
+      }
+      if (hasEnd) {
+        stmt.setTimestamp(index++, toTimestamp(todo.getEndDatetime()));
       }
 
-      if (todo.getEndDatetime() != null) {
-        stmt.setTimestamp(4, toTimestamp(todo.getEndDatetime()));
-      } else {
-        stmt.setTimestamp(4, null);
-      }
-
-      stmt.setBoolean(5, todo.isDone());
-
+      stmt.setBoolean(index, todo.isDone());
       stmt.executeUpdate();
+
     } catch (SQLException e) {
-      throw new RuntimeException("Error while adding a new todo");
+      throw new RuntimeException("Error creating new todo", e);
     }
   }
 
